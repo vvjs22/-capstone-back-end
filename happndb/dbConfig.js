@@ -8,6 +8,7 @@ const { DATABASE_URL, PG_HOST, PG_PORT, PG_DATABASE, PG_USER } = process.env;
 const cn = DATABASE_URL
   ? {
       connectionString: DATABASE_URL,
+      ssl:true,
       max: 30,
     }
   : {

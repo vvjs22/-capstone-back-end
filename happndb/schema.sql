@@ -10,6 +10,7 @@ CREATE TABLE "User" (
   l_name VARCHAR(255) NOT NULL,
   interests VARCHAR(255),
   twitch_channel TEXT
+  user_profile_img TEXT
 );
 
 -- Create the Event table
@@ -34,6 +35,9 @@ CREATE TABLE "Event" (
   img_link TEXT,
   organizer_user_id INTEGER NOT NULL,
   checked_in_users INTEGER,
+  location geography(POINT, 4326)
+  latitude double precision,
+  longitude double precision,
   FOREIGN KEY (organizer_user_id) REFERENCES "User" (id)
 );
 

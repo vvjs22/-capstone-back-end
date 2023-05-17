@@ -10,7 +10,7 @@ CREATE TABLE "User" (
   l_name VARCHAR(255) NOT NULL,
   interests VARCHAR(255),
   twitch_channel TEXT
-  user_profile_img TEXT
+  user_profile_link TEXT
 );
 
 -- Create the Event table

@@ -1,16 +1,6 @@
 const express = require("express");
 const events = express.Router();
 const db = require("../happndb/dbConfig.js");
-// const { Pool } = require('pg');
-// const pool = new Pool({
-//     host: process.env.DB_HOST,
-//     port: process.env.DB_PORT,
-//     user: process.env.DB_USER,
-//     password: process.env.DB_PW,
-//     database: process.env.DB_NAME,
-//     ssl:true,
-//   });
-// const { Client } = require("pg-promise");
 const helpers = require("../helperFunctions/helperFunction.js");
 
 const getAllEvents = async () => {
@@ -24,7 +14,8 @@ const getAllEvents = async () => {
   
   const getEvent = async (id) => {
     try {
-      const oneEvent = await db.one('SELECT * FROM "Event" WHERE id=$1', id);
+      const eventId = parseInt(id); // Id is a integer
+      const oneEvent = await db.one('SELECT * FROM "Event" WHERE id = $1', eventId);
       return oneEvent;
     } catch (error) {
       return error;
@@ -37,11 +28,14 @@ const getAllEvents = async () => {
         'INSERT INTO "Event" (title, description, date, time, address, city, state, zip, img_link, organizer_user_id, checked_in_users) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *',
         [event.name, event.title, event.description, event.date, event.time, event.address, event.city, event.state, event.zip, event.img_link, event.organizer_user_id, event.checked_in_users]
       );
-    //helper function to get 4326, lat and long from address
+    //helper function w/ google api to get 4326, lat and long from address
     const geoCoordinates = await helperFunction.geocode(newEvent.address);
     newEvent.location = geoCoordinates.location;
     newEvent.latitude = geoCoordinates.latitude;
     newEvent.longitude = geoCoordinates.longitude;
+
+    // Update the row in the database with the geoCoordinates
+        await db.none('UPDATE "Event" SET location = $1, latitude = $2, longitude = $3 WHERE id = $4', [geoCoordinates.location, geoCoordinates.latitude, geoCoordinates.longitude, newEvent.id]);
 
       return newEvent;
     } catch (error) {

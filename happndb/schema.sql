@@ -9,13 +9,15 @@ CREATE TABLE "User" (
   f_name VARCHAR(255) NOT NULL,
   l_name VARCHAR(255) NOT NULL,
   interests VARCHAR(255),
-  twitch_channel TEXT
-  user_profile_link TEXT
+  twitch_channel TEXT,
+  user_profile_link TEXT,
+  badge_data JSONB CHECK (badge_data::text ILIKE ANY (ARRAY['%organizer%', '%activist%', '%advocate%']) OR badge_data IS NULL)
 );
 
 -- Create the Event table
 CREATE TABLE "Event" (
   id SERIAL PRIMARY KEY,
+  cause_id INT,
   title VARCHAR(255) NOT NULL,
   description TEXT NOT NULL,
   date DATE NOT NULL,
@@ -38,7 +40,8 @@ CREATE TABLE "Event" (
   location geography(POINT, 4326)
   latitude double precision,
   longitude double precision,
-  FOREIGN KEY (organizer_user_id) REFERENCES "User" (id)
+  FOREIGN KEY (organizer_user_id) REFERENCES "User" (id),
+  FOREIGN KEY (cause_id) REFERENCES "Cause"(id)
 );
 
 -- Create the Live_video table
@@ -59,3 +62,19 @@ CREATE TABLE "Event_attendee" (
   FOREIGN KEY (event_id) REFERENCES "Event" (id),
   PRIMARY KEY (user_id, event_id)
 );
+
+-- Create the Cause table with a primary key
+CREATE TABLE "Cause" (
+  id SERIAL PRIMARY KEY,
+  type VARCHAR(255) NOT NULL CHECK (LOWER(type) IN (
+    'environmental conservation',
+    'education',
+    'animal rights',
+    'societal justice',
+    'disability rights',
+    'veterans issues',
+    'mental health awareness'
+  ))
+);
+
+

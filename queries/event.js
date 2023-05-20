@@ -5,7 +5,7 @@ const helpers = require("../helperFunctions/helperFunction.js");
 
 const getAllEvents = async () => {
     try {
-      const allEvents = await db.any('SELECT * FROM "Event"');
+      const allEvents = await db.any('SELECT * FROM "Event" ORDER BY id ASC');
       return allEvents;
     } catch (error) {
       return error;

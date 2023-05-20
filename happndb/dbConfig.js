@@ -21,6 +21,16 @@ const cn = DATABASE_URL
 // alt from express docs
 // var db = pgp('postgres://username:password@host:port/database')
 
+//const { Pool } = require('pg');
+// const pool = new Pool({
+//   host: process.env.DB_HOST,
+//   port: process.env.DB_PORT,
+//   user: process.env.DB_USER,
+//   password: process.env.DB_PW,
+//   database: process.env.DB_NAME,
+//   ssl:true,
+// });
+
 const db = pgp(cn);
 console.log("PostgreSQL connected!", cn);
 module.exports = db;

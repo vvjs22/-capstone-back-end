@@ -1,5 +1,10 @@
 DROP DATABASE IF EXISTS happndb;
 CREATE database happndb;
+DROP TABLE "User";
+DROP TABLE "Cause";
+CREATE EXTENSION IF NOT EXISTS postgis;
+CREATE EXTENSION IF NOT EXISTS postgis_topology;
+
 
 -- Create the User table
 CREATE TABLE "User" (
@@ -12,6 +17,20 @@ CREATE TABLE "User" (
   twitch_channel TEXT,
   user_profile_link TEXT,
   badge_data JSONB CHECK (badge_data::text ILIKE ANY (ARRAY['%organizer%', '%activist%', '%advocate%']) OR badge_data IS NULL)
+);
+
+-- Create the Cause table with a primary key
+CREATE TABLE "Cause" (
+  id SERIAL PRIMARY KEY,
+  type VARCHAR(255) NOT NULL CHECK (LOWER(type) IN (
+    'Environmental',
+    'Education',
+    'Animal',
+    'Justice',
+    'Disability',
+    'Veteran',
+    'Mental'
+  ))
 );
 
 -- Create the Event table
@@ -63,18 +82,6 @@ CREATE TABLE "Event_attendee" (
   PRIMARY KEY (user_id, event_id)
 );
 
--- Create the Cause table with a primary key
-CREATE TABLE "Cause" (
-  id SERIAL PRIMARY KEY,
-  type VARCHAR(255) NOT NULL CHECK (LOWER(type) IN (
-    'Environmental',
-    'Education',
-    'Animal',
-    'Justice',
-    'Disability',
-    'Veteran',
-    'Mental'
-  ))
-);
+
 
 

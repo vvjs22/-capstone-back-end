@@ -12,10 +12,11 @@ const getAllEvents = async () => {
   }
 };
 
+// Category selection for map
 const categorySelect = async (category) => {
   try {
     const categoryGroup = await db.any(
-      'SELECT * FROM "Event" WHERE category = $1',
+      'SELECT User.f_name, User.l_name FROM "Event" JOIN User ON Event.organizer_user_id = User.id WHERE category = $1 ',
       category
     );
     return categoryGroup;

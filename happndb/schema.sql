@@ -67,13 +67,13 @@ CREATE TABLE "Event_attendee" (
 CREATE TABLE "Cause" (
   id SERIAL PRIMARY KEY,
   type VARCHAR(255) NOT NULL CHECK (LOWER(type) IN (
-    'environmental conservation',
-    'education',
-    'animal rights',
-    'societal justice',
-    'disability rights',
-    'veterans issues',
-    'mental health awareness'
+    'Environmental',
+    'Education',
+    'Animal',
+    'Justice',
+    'Disability',
+    'Veteran',
+    'Mental'
   ))
 );
 

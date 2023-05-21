@@ -12,18 +12,27 @@ const getAllEvents = async () => {
   }
 };
 
-// Category selection for map
-const categorySelect = async (category) => {
+// // Category selection for map
+// const categorySelect = async (category) => {
+//   try {
+//     const categoryGroup = await db.any(
+//       'SELECT User.f_name, User.l_name, User.user_profile_link, Event.title, Event.description, Event.date, Event.time, Event.category, Event.img_link, Event.checked_in_users, Event.latitude, Event.longitude FROM "Event" JOIN User ON Event.organizer_user_id = User.id WHERE category = $1 ',
+//       category
+//     );
+//     return categoryGroup;
+//   } catch (error) {
+//     return error;
+//   }
+// };
+const getCauseById = async (id) => {
   try {
-    const categoryGroup = await db.any(
-      'SELECT User.f_name, User.l_name, User.user_profile_link, Event.title, Event.description, Event.date, Event.time, Event.category, Event.img_link, Event.checked_in_users, Event.latitude, Event.longitude FROM "Event" JOIN User ON Event.organizer_user_id = User.id WHERE category = $1 ',
-      category
-    );
-    return categoryGroup;
+    const cause = await db.one('SELECT * FROM "Cause" WHERE id = $1', id);
+    return cause;
   } catch (error) {
     return error;
   }
 };
+
 
 const getEvent = async (id) => {
   try {
@@ -80,4 +89,4 @@ const createEvent = async (event) => {
   }
 };
 
-module.exports = { getAllEvents, getEvent, createEvent, categorySelect };
+module.exports = { getAllEvents, getEvent, createEvent, getCauseById };

@@ -15,17 +15,17 @@ users.get("/", async (req, res) => {
   }
 });
 
-//SHOW - for profile.   Can delete user from here.
 users.get("/:id", async (req, res) => {
   try {
-    const { id } = req.params;
-    const oneUser = await getCurrUser(id);
+    const { id } = req.params; // Extract id from req.params fixed -js
+    const oneUser = await getCurrUser(id); // Pass id as an argument fixed -js
     res.json(oneUser);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "An error occurred" });
   }
 });
+
 
 // //Specific categories for map display
 // events.get("/category/:category", async (req, res) => {

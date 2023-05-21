@@ -3,7 +3,7 @@ const events = express.Router();
 const db = require("../happndb/dbConfig.js");
 const helpers = require("../helperFunctions/helperFunction.js");
 const { Client } = require("pg-promise");
-const { getAllEvents, getEvent, createEvent } = require("../queries/event.js");
+const { getAllEvents, getEvent, createEvent, getCauseById } = require("../queries/event.js");
 
 //INDEX
 events.get("/", async (req, res) => {
@@ -28,15 +28,29 @@ events.get("/:id", async (req, res) => {
   }
 });
 
-//Specific categories for map display
-events.get("/category/:category", async (req, res) => {
+// // Select events by category
+// const categorySelect = async (category) => {
+//   try {
+//     const eventsByCategory = await db.any('SELECT * FROM "Event" WHERE category = $1', category);
+//     return eventsByCategory;
+//   } catch (error) {
+//     return error;
+//   }
+// };
+
+// Assuming you have already defined the necessary imports and database connection
+
+// GET /events/:causeId
+events.get('/cause/:causeId', async (req, res) => {
   try {
-    const { category } = req.params;
-    const categoryGroup = await categorySelect(category);
-    res.json(categoryGroup);
+    const { causeId } = req.params;
+
+    const oneCause = await getCauseById(causeId);
+
+    res.json(oneCause);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Category does not exist" });
+    res.status(500).json({ error: 'An error occurred' });
   }
 });
 

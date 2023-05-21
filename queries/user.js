@@ -16,12 +16,13 @@ const getAllUsers = async () => {
 // Get Current User
 const getCurrUser = async (id) => {
   try {
-    const currUser = await db.any('SELECT FROM "User" WHERE id = $1 ', id);
+    const currUser = await db.one('SELECT * FROM "User" WHERE id = $1', id);
     return currUser;
   } catch (error) {
     return error;
   }
 };
+
 
 // const getEvent = async (id) => {
 //   try {

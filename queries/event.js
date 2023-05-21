@@ -16,7 +16,7 @@ const getAllEvents = async () => {
 const categorySelect = async (category) => {
   try {
     const categoryGroup = await db.any(
-      'SELECT User.f_name, User.l_name FROM "Event" JOIN User ON Event.organizer_user_id = User.id WHERE category = $1 ',
+      'SELECT User.f_name, User.l_name, User.user_profile_link, Event.title, Event.description, Event.date, Event.time, Event.category, Event.img_link, Event.checked_in_users, Event.latitude, Event.longitude FROM "Event" JOIN User ON Event.organizer_user_id = User.id WHERE category = $1 ',
       category
     );
     return categoryGroup;

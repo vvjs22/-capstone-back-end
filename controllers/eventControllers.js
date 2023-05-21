@@ -31,7 +31,7 @@ events.get("/:id", async (req, res) => {
 //Specific categories for map display
 events.get("/category/:category", async (req, res) => {
   try {
-    const { id } = req.params;
+    const { category } = req.params;
     const categoryGroup = await categorySelect(category);
     res.json(categoryGroup);
   } catch (error) {

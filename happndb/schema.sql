@@ -23,13 +23,13 @@ CREATE TABLE "User" (
 CREATE TABLE "Cause" (
   id SERIAL PRIMARY KEY,
   type VARCHAR(255) NOT NULL CHECK (LOWER(type) IN (
-    'Environmental',
-    'Education',
-    'Animal',
-    'Justice',
-    'Disability',
-    'Veteran',
-    'Mental'
+    'environmental',
+    'education',
+    'animal',
+    'justice',
+    'disability',
+    'veteran',
+    'mental'
   ))
 );
 
@@ -55,7 +55,7 @@ CREATE TABLE "Event" (
   zip INTEGER NOT NULL,
   img_link TEXT,
   organizer_user_id INTEGER NOT NULL,
-  checked_in_users INTEGER,
+  checked_in_users INTEGER[],
   location geography(POINT, 4326),
   latitude double precision,
   longitude double precision,
@@ -67,7 +67,7 @@ CREATE TABLE "Event" (
 CREATE TABLE "Live_video" (
   id SERIAL PRIMARY KEY,
   video_id VARCHAR(255) NOT NULL,
-  user_id INTEGER NOT NULL,
+  user_id INTEGER[],
   event_id INTEGER NOT NULL,
   FOREIGN KEY (user_id) REFERENCES "User" (id),
   FOREIGN KEY (event_id) REFERENCES "Event" (id)
@@ -75,7 +75,7 @@ CREATE TABLE "Live_video" (
 
 -- Create the Event_attendee table with a primary key
 CREATE TABLE "Event_attendee" (
-  user_id INTEGER NOT NULL,
+  user_id INTEGER[],
   event_id INTEGER NOT NULL,
   FOREIGN KEY (user_id) REFERENCES "User" (id),
   FOREIGN KEY (event_id) REFERENCES "Event" (id),

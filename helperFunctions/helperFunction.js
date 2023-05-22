@@ -44,6 +44,9 @@ async function getAddresses() {
     }
   }
   
+
+    
+  
 //   updateAddresses(); // Call the updateAddresses function
   
 module.exports = { getAddresses, geocode, updateAddresses };

@@ -12,26 +12,24 @@ const getAllEvents = async () => {
   }
 };
 
-// // Category selection for map
-// const categorySelect = async (category) => {
-//   try {
-//     const categoryGroup = await db.any(
-//       'SELECT User.f_name, User.l_name, User.user_profile_link, Event.title, Event.description, Event.date, Event.time, Event.category, Event.img_link, Event.checked_in_users, Event.latitude, Event.longitude FROM "Event" JOIN User ON Event.organizer_user_id = User.id WHERE category = $1 ',
-//       category
-//     );
-//     return categoryGroup;
-//   } catch (error) {
-//     return error;
-//   }
-// };
-const getCauseById = async (id) => {
+const getCauseById = async (causeId) => {
   try {
-    const cause = await db.one('SELECT * FROM "Cause" WHERE id = $1', id);
-    return cause;
+    const count = await db.one('SELECT COUNT(*) FROM "Event" WHERE cause_id = $1', causeId);
+    const causeType = await db.one('SELECT * FROM "Cause" WHERE id = $1', causeId);
+    const causeList = await db.any('SELECT title, description, organizer_user_id, checked_in_users, address, city, state FROM "Event" WHERE cause_id = $1', causeId);
+
+    // Calculate the count of checked-in users for each event
+    const causeListWithCount = causeList.map(event => ({
+      ...event,
+      checked_in_users_count: event.checked_in_users ? (event.checked_in_users.includes(',') ? event.checked_in_users.split(',').length : 1) : 0
+    }));
+
+    return { count, causeType, causeList: causeListWithCount };
   } catch (error) {
     return error;
   }
 };
+
 
 
 const getEvent = async (id) => {
@@ -50,7 +48,7 @@ const getEvent = async (id) => {
 const createEvent = async (event) => {
   try {
     const newEvent = await db.one(
-      'INSERT INTO "Event" (title, description, date, time, address, city, state, zip, img_link, organizer_user_id, checked_in_users) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *',
+      'INSERT INTO "Event" (title, description, date, time, address, city, state, zip, img_link, organizer_user_id, checked_in_users, cause_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *',
       [
         event.name,
         event.title,
@@ -64,6 +62,7 @@ const createEvent = async (event) => {
         event.img_link,
         event.organizer_user_id,
         event.checked_in_users,
+        event.cause_id,
       ]
     );
     //helper function w/ google api to get 4326, lat and long from address

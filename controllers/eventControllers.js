@@ -28,26 +28,15 @@ events.get("/:id", async (req, res) => {
   }
 });
 
-// // Select events by category
-// const categorySelect = async (category) => {
-//   try {
-//     const eventsByCategory = await db.any('SELECT * FROM "Event" WHERE category = $1', category);
-//     return eventsByCategory;
-//   } catch (error) {
-//     return error;
-//   }
-// };
-
-// Assuming you have already defined the necessary imports and database connection
-
-// GET /events/:causeId
 events.get('/cause/:causeId', async (req, res) => {
   try {
     const { causeId } = req.params;
 
-    const oneCause = await getCauseById(causeId);
+    // Call the getCauseById function to get the count of events
+    const causeFunction = await getCauseById(causeId);
 
-    res.json(oneCause);
+    // Send the count as the response
+    res.json(causeFunction );
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'An error occurred' });
@@ -70,6 +59,7 @@ events.post("/", async (req, res) => {
       img_link,
       organizer_user_id,
       checked_in_users,
+      cause_id,
     } = req.body;
     const newEvent = await createEvent({
       name,
@@ -84,6 +74,7 @@ events.post("/", async (req, res) => {
       img_link,
       organizer_user_id,
       checked_in_users,
+      cause_id,
     });
     res.json(newEvent);
   } catch (error) {

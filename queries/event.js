@@ -3,6 +3,7 @@ const events = express.Router();
 const db = require("../happndb/dbConfig.js");
 const helpers = require("../helperFunctions/helperFunction.js");
 
+// Select all events
 const getAllEvents = async () => {
   try {
     const allEvents = await db.any('SELECT * FROM "Event" ORDER BY id ASC');
@@ -14,24 +15,37 @@ const getAllEvents = async () => {
 
 const getCauseById = async (causeId) => {
   try {
-    const count = await db.one('SELECT COUNT(*) FROM "Event" WHERE cause_id = $1', causeId);
     const causeType = await db.one('SELECT * FROM "Cause" WHERE id = $1', causeId);
-    const causeList = await db.any('SELECT title, description, organizer_user_id, checked_in_users, address, city, state FROM "Event" WHERE cause_id = $1', causeId);
+    const count = await db.one('SELECT COUNT(*) FROM "Event" WHERE cause_id = $1', causeId);
+    const causeList = await db.any(
+      'SELECT ' +
+      '  title, description, organizer_user_id, checked_in_users, address, city, state ' +
+      'FROM "Event" ' +
+      'WHERE cause_id = $1',
+      causeId
+    );
+    // Get the organizer_user_id First, Last and Profile Pic for each event card
+    const organizerIds = causeList.map(event => event.organizer_user_id);
+    const organizerNameProfilePic = await db.any(
+      'SELECT id, f_name, l_name, user_profile_link FROM "User" WHERE id = ANY($1)',
+      [organizerIds]
+    );
 
-    // Calculate the count of checked-in users for each event
+    // Calculate the count of checked-in users for each event and add organizerNameProfilePic
     const causeListWithCount = causeList.map(event => ({
       ...event,
-      checked_in_users_count: event.checked_in_users ? (event.checked_in_users.includes(',') ? event.checked_in_users.split(',').length : 1) : 0
+      checked_in_users_count: event.checked_in_users ? (event.checked_in_users.includes(',') ? event.checked_in_users.split(',').length : 1) : 0,
+      organizer: organizerNameProfilePic.find(organizer => organizer.id === event.organizer_user_id)
     }));
 
-    return { count, causeType, causeList: causeListWithCount };
+    return { causeType, count, causeList: causeListWithCount };
   } catch (error) {
     return error;
   }
 };
 
 
-
+// Get one event
 const getEvent = async (id) => {
   try {
     const eventId = parseInt(id); // Id is a integer
@@ -45,6 +59,7 @@ const getEvent = async (id) => {
   }
 };
 
+// Create a new event
 const createEvent = async (event) => {
   try {
     const newEvent = await db.one(
@@ -88,4 +103,17 @@ const createEvent = async (event) => {
   }
 };
 
-module.exports = { getAllEvents, getEvent, createEvent, getCauseById };
+// Allow user to check-in to event
+const userCheckIn = async (eventID, userID) => {
+  try {
+    await db.none(
+      'UPDATE "Event_attendee" SET user_id = array_append(user_id, $1) WHERE event_id = $2',
+      [userID, eventID]
+    );
+    return 'Check-in successful';
+  } catch (error) {
+    return error;
+  }
+};
+
+module.exports = { getAllEvents, getEvent, createEvent, getCauseById, userCheckIn };

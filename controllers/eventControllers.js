@@ -3,7 +3,7 @@ const events = express.Router();
 const db = require("../happndb/dbConfig.js");
 const helpers = require("../helperFunctions/helperFunction.js");
 const { Client } = require("pg-promise");
-const { getAllEvents, getEvent, createEvent, getCauseById } = require("../queries/event.js");
+const { getAllEvents, getEvent, createEvent, getCauseById, userCheckIn } = require("../queries/event.js");
 
 //INDEX
 events.get("/", async (req, res) => {
@@ -28,6 +28,7 @@ events.get("/:id", async (req, res) => {
   }
 });
 
+//Specific categories for map display
 events.get('/cause/:causeId', async (req, res) => {
   try {
     const { causeId } = req.params;
@@ -82,5 +83,21 @@ events.post("/", async (req, res) => {
     res.status(500).json({ error: "An error occurred" });
   }
 });
+
+//CHECK-IN
+events.post('/checkin', async (req, res) => {
+  try {
+    const { eventID, userID } = req.body;
+
+    // Call the checkIn function to add the user to the attendee list
+    const result = await userCheckIn(eventID, userID);
+
+    res.json({ message: result });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+});
+
 
 module.exports = events;

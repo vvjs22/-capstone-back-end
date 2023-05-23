@@ -24,6 +24,7 @@ const getCauseById = async (causeId) => {
       'WHERE cause_id = $1',
       causeId
     );
+
     // Get the organizer_user_id First, Last and Profile Pic for each event card
     const organizerIds = causeList.map(event => event.organizer_user_id);
     const organizerNameProfilePic = await db.any(

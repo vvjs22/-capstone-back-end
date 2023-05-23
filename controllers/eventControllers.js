@@ -28,22 +28,6 @@ events.get("/:id", async (req, res) => {
   }
 });
 
-//Specific categories for map display
-events.get('/cause/:causeId', async (req, res) => {
-  try {
-    const { causeId } = req.params;
-
-    // Call the getCauseById function to get the count of events
-    const causeFunction = await getCauseById(causeId);
-
-    // Send the count as the response
-    res.json(causeFunction );
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'An error occurred' });
-  }
-});
-
 //CREATE
 events.post("/", async (req, res) => {
   try {

@@ -8,9 +8,9 @@ CREATE EXTENSION IF NOT EXISTS postgis_topology;
 
 -- Create the User table
 CREATE TABLE "User" (
-  id SERIAL PRIMARY KEY,
+  id TEXT PRIMARY KEY,
   email VARCHAR(255) UNIQUE NOT NULL,
-  user_name VARCHAR(255) NOT NULL,
+  user_name VARCHAR(255),
   f_name VARCHAR(255) NOT NULL,
   l_name VARCHAR(255) NOT NULL,
   interests VARCHAR(255),
@@ -50,13 +50,15 @@ CREATE TABLE "Event" (
   'community',
   'food')),
   address VARCHAR(255) NOT NULL,
-  city VARCHAR(255) NOT NULL CHECK (LOWER(city) IN ('brooklyn', 'queens', 'manhattan', 'staten island', 'bronx', 'new york')) ,
-  state VARCHAR(255) NOT NULL CHECK (LOWER(state) = 'ny'),
-  zip INTEGER NOT NULL,
+  city VARCHAR(255)  CHECK (LOWER(city) IN ('brooklyn', 'queens', 'manhattan', 'staten island', 'bronx', 'new york')) ,
+  state VARCHAR(255)  CHECK (LOWER(state) = 'ny'),
+  -- city TEXT, 
+  -- state VARCHAR(2),
+  zip INTEGER ,
   img_link TEXT,
-  organizer_user_id INTEGER NOT NULL,
-  checked_in_users INTEGER[],
-  location geography(POINT, 4326),
+  organizer_user_id TEXT NOT NULL,
+  checked_in_users INTEGER,
+  -- location geography(POINT, 4326),
   latitude double precision,
   longitude double precision,
   FOREIGN KEY (organizer_user_id) REFERENCES "User" (id),
@@ -80,6 +82,11 @@ CREATE TABLE "Event_attendee" (
   FOREIGN KEY (event_id) REFERENCES "Event" (id),
   PRIMARY KEY (user_id, event_id)
 );
+
+CREATE TABLE test ( 
+  id SERIAL PRIMARY KEY, 
+  name TEXT
+)
 
 
 

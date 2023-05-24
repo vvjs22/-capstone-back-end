@@ -3,7 +3,13 @@ const events = express.Router();
 const db = require("../happndb/dbConfig.js");
 const helpers = require("../helperFunctions/helperFunction.js");
 const { Client } = require("pg-promise");
-const { getAllEvents, getEvent, createEvent, getCauseById, userCheckIn } = require("../queries/event.js");
+const {
+  getAllEvents,
+  getEvent,
+  createEvent,
+  getCauseById,
+  userCheckIn,
+} = require("../queries/event.js");
 
 //INDEX
 events.get("/", async (req, res) => {
@@ -30,6 +36,7 @@ events.get("/:id", async (req, res) => {
 
 //CREATE
 events.post("/", async (req, res) => {
+  console.log(req.body);
   try {
     const {
       name,
@@ -69,7 +76,7 @@ events.post("/", async (req, res) => {
 });
 
 //CHECK-IN
-events.post('/checkin', async (req, res) => {
+events.post("/checkin", async (req, res) => {
   try {
     const { eventID, userID } = req.body;
 
@@ -79,9 +86,8 @@ events.post('/checkin', async (req, res) => {
     res.json({ message: result });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'An error occurred' });
+    res.status(500).json({ error: "An error occurred" });
   }
 });
-
 
 module.exports = events;

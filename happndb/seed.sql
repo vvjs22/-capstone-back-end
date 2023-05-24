@@ -1,16 +1,16 @@
 \c happndb;
 
-CREATE TABLE IF NOT EXISTS "User"(
-  id SERIAL PRIMARY KEY,
-  email VARCHAR(255) UNIQUE NOT NULL,
-  user_name VARCHAR(255) NOT NULL,
-  f_name VARCHAR(255) NOT NULL,
-  l_name VARCHAR(255) NOT NULL,
-  interests VARCHAR(255),
-  twitch_channel TEXT,
-  user_profile_link TEXT, 
-  badge_data TEXT
-);
+-- CREATE TABLE IF NOT EXISTS "User"(
+--   id SERIAL PRIMARY KEY,
+--   email VARCHAR(255) UNIQUE NOT NULL,
+--   user_name VARCHAR(255),
+--   f_name VARCHAR(255) NOT NULL,
+--   l_name VARCHAR(255) NOT NULL,
+--   interests VARCHAR(255),
+--   twitch_channel TEXT,
+--   user_profile_link TEXT, 
+--   badge_data TEXT
+-- );
 
 INSERT INTO "User"(id,email,user_name,f_name,l_name,interests,twitch_channel, user_profile_link, badge_data) VALUES (1,'mologhlen0@xinhuanet.com','mologhlen0','Minna','O''Loghlen','vulputate ut ultrices vel augue vestibulum ante ipsum','https://amazon.com/elit.jsp?in=praesent&tempus=lectus&sit=vestibulum&amet=quam&sem=sapien&fusce=varius&consequat=ut&nulla=blandit&nisl=non&nunc=interdum&nisl=in&duis=ante&bibendum=vestibulum&felis=ante&sed=ipsum&interdum=primis&venenatis=in', 'https://xsgames.co/randomusers/avatar.php?g=male', 'advocate');
 INSERT INTO "User"(id,email,user_name,f_name,l_name,interests,twitch_channel, user_profile_link, badge_data) VALUES (2,'lheam1@sfgate.com','lheam1','Lida','Heam','orci luctus et ultrices posuere cubilia curae','http://nhs.uk/quis/orci/eget/orci.aspx?donec=erat&odio=tortor&justo=sollicitudin&sollicitudin=mi&ut=sit&suscipit=amet&a=lobortis&feugiat=sapien&et=sapien&eros=non&vestibulum=mi&ac=integer&est=ac&lacinia=neque&nisi=duis&venenatis=bibendum&tristique=morbi&fusce=non&congue=quam&diam=nec&id=dui&ornare=luctus&imperdiet=rutrum&sapien=nulla&urna=tellus&pretium=in&nisl=sagittis&ut=dui&volutpat=vel&sapien=nisl&arcu=duis&sed=ac&augue=nibh&aliquam=fusce&erat=lacus&volutpat=purus&in=aliquet&congue=at&etiam=feugiat&justo=non&etiam=pretium&pretium=quis&iaculis=lectus&justo=suspendisse&in=potenti&hac=in&habitasse=eleifend&platea=quam&dictumst=a&etiam=odio&faucibus=in&cursus=hac&urna=habitasse&ut=platea&tellus=dictumst&nulla=maecenas&ut=ut&erat=massa&id=quis&mauris=augue&vulputate=luctus&elementum=tincidunt&nullam=nulla&varius=mollis&nulla=molestie&facilisi=lorem&cras=quisque&non=ut&velit=erat&nec=curabitur&nisi=gravida&vulputate=nisi&nonummy=at&maecenas=nibh&tincidunt=in&lacus=hac&at=habitasse&velit=platea&vivamus=dictumst&vel=aliquam&nulla=augue&eget=quam&eros=sollicitudin&elementum=vitae&pellentesque=consectetuer', 'https://xsgames.co/randomusers/avatar.php?g=male', 'advocate');
@@ -98,7 +98,7 @@ INSERT INTO "Live_video"(id,video_id,user_id,event_id) VALUES (16,'#596',6,7);
 INSERT INTO "Live_video"(id,video_id,user_id,event_id) VALUES (17,'#ac6',100,2);
 INSERT INTO "Live_video"(id,video_id,user_id,event_id) VALUES (18,'#1bb',200,3);
 
--- Create the Event_attendee table with a primary key
+Create the Event_attendee table with a primary key
 CREATE TABLE "Event_attendee" (
   user_id INTEGER NOT NULL,
   event_id INTEGER NOT NULL,

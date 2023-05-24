@@ -31,6 +31,7 @@ CREATE TABLE "Cause" (
     'veteran',
     'mental'
   ))
+  name Text;
 );
 
 -- Create the Event table
@@ -41,17 +42,18 @@ CREATE TABLE "Event" (
   description TEXT NOT NULL,
   date DATE NOT NULL,
   time TIME NOT NULL,
-  category VARCHAR(255) NOT NULL CHECK (LOWER(category) IN ('conferences',
-  'festivals',
-  'sports',
-  'cultural',
-  'workshop',
-  'charity',
-  'community',
-  'food')),
+  -- category VARCHAR(255) NOT NULL CHECK (LOWER(category) IN ('conferences',
+  -- 'festivals',
+  -- 'sports',
+  -- 'cultural',
+  -- 'workshop',
+  -- 'charity',
+  -- 'community',
+  -- 'food')),
+  category TEXT,
   address VARCHAR(255) NOT NULL,
-  city VARCHAR(255)  CHECK (LOWER(city) IN ('brooklyn', 'queens', 'manhattan', 'staten island', 'bronx', 'new york')) ,
-  state VARCHAR(255)  CHECK (LOWER(state) = 'ny'),
+  -- city VARCHAR(255)  CHECK (LOWER(city) IN ('brooklyn', 'queens', 'manhattan', 'staten island', 'bronx', 'new york')) ,
+  -- state VARCHAR(255)  CHECK (LOWER(state) = 'ny'),
   -- city TEXT, 
   -- state VARCHAR(2),
   zip INTEGER ,
@@ -65,6 +67,22 @@ CREATE TABLE "Event" (
   FOREIGN KEY (cause_id) REFERENCES "Cause"(id)
 );
 
+-- CREATE TABLE Event2 ( 
+--   id SERIAL PRIMARY KEY, 
+--   cause_id INT, 
+--   title TEXT,
+--   description TEXT, 
+--   date DATE, 
+--   time TIME, 
+--   category TEXT, 
+--   address TEXT,
+--   latitude double precision,
+--   longitude double precision, 
+--   organizer_user_id TEXT,
+-- );
+
+
+
 -- Create the Live_video table
 CREATE TABLE "Live_video" (
   id SERIAL PRIMARY KEY,
@@ -77,17 +95,9 @@ CREATE TABLE "Live_video" (
 
 -- Create the Event_attendee table with a primary key
 CREATE TABLE "Event_attendee" (
-  user_id INTEGER[],
+  user_id INTEGER NOT NULL,
   event_id INTEGER NOT NULL,
   FOREIGN KEY (event_id) REFERENCES "Event" (id),
   PRIMARY KEY (user_id, event_id)
 );
-
-CREATE TABLE test ( 
-  id SERIAL PRIMARY KEY, 
-  name TEXT
-)
-
-
-
 

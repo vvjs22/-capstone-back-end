@@ -42,15 +42,14 @@ CREATE TABLE "Event" (
   description TEXT NOT NULL,
   date DATE NOT NULL,
   time TIME NOT NULL,
-  -- category VARCHAR(255) NOT NULL CHECK (LOWER(category) IN ('conferences',
-  -- 'festivals',
-  -- 'sports',
-  -- 'cultural',
-  -- 'workshop',
-  -- 'charity',
-  -- 'community',
-  -- 'food')),
-  category TEXT,
+  category VARCHAR(255) NOT NULL CHECK (LOWER(category) IN ('conferences',
+  'festivals',
+  'sports',
+  'cultural',
+  'workshop',
+  'charity',
+  'community',
+  'food')),
   address VARCHAR(255) NOT NULL,
   -- city VARCHAR(255)  CHECK (LOWER(city) IN ('brooklyn', 'queens', 'manhattan', 'staten island', 'bronx', 'new york')) ,
   -- state VARCHAR(255)  CHECK (LOWER(state) = 'ny'),
@@ -66,21 +65,6 @@ CREATE TABLE "Event" (
   FOREIGN KEY (organizer_user_id) REFERENCES "User" (id),
   FOREIGN KEY (cause_id) REFERENCES "Cause"(id)
 );
-
--- CREATE TABLE Event2 ( 
---   id SERIAL PRIMARY KEY, 
---   cause_id INT, 
---   title TEXT,
---   description TEXT, 
---   date DATE, 
---   time TIME, 
---   category TEXT, 
---   address TEXT,
---   latitude double precision,
---   longitude double precision, 
---   organizer_user_id TEXT,
--- );
-
 
 
 -- Create the Live_video table

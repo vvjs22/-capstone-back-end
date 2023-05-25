@@ -2,7 +2,12 @@ const express = require("express");
 const users = express.Router();
 const db = require("../happndb/dbConfig.js");
 const { Client } = require("pg-promise");
-const { getAllUsers, getCurrUser, createEvent } = require("../queries/user.js");
+const {
+  getAllUsers,
+  getCurrUser,
+  createUser,
+  createEvent,
+} = require("../queries/user.js");
 
 //INDEX
 users.get("/", async (req, res) => {
@@ -26,6 +31,18 @@ users.get("/:id", async (req, res) => {
   }
 });
 
+users.post("/", async (req, res) => {
+  try {
+    console.log(req.body);
+    const user = req.body;
+    const createdUser = await createUser(user);
+    console.log(createdUser);
+    res.json(createdUser);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+});
 
 // //Specific categories for map display
 // events.get("/category/:category", async (req, res) => {

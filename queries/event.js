@@ -15,28 +15,40 @@ const getAllEvents = async () => {
 
 const getCauseById = async (causeId) => {
   try {
-    const causeType = await db.one('SELECT * FROM "Cause" WHERE id = $1', causeId);
-    const count = await db.one('SELECT COUNT(*) FROM "Event" WHERE cause_id = $1', causeId);
+    const causeType = await db.one(
+      'SELECT * FROM "Cause" WHERE id = $1',
+      causeId
+    );
+    const count = await db.one(
+      'SELECT COUNT(*) FROM "Event" WHERE cause_id = $1',
+      causeId
+    );
     const causeList = await db.any(
-      'SELECT ' +
-      '  title, description, organizer_user_id, checked_in_users, address, city, state ' +
-      'FROM "Event" ' +
-      'WHERE cause_id = $1',
+      "SELECT " +
+        "  title, description, organizer_user_id, checked_in_users, address, city, state " +
+        'FROM "Event" ' +
+        "WHERE cause_id = $1",
       causeId
     );
 
     // Get the organizer_user_id First, Last and Profile Pic for each event card
-    const organizerIds = causeList.map(event => event.organizer_user_id);
+    const organizerIds = causeList.map((event) => event.organizer_user_id);
     const organizerNameProfilePic = await db.any(
       'SELECT id, f_name, l_name, user_profile_link FROM "User" WHERE id = ANY($1)',
       [organizerIds]
     );
 
     // Calculate the count of checked-in users for each event and add organizerNameProfilePic
-    const causeListWithCount = causeList.map(event => ({
+    const causeListWithCount = causeList.map((event) => ({
       ...event,
-      checked_in_users_count: event.checked_in_users ? (event.checked_in_users.includes(',') ? event.checked_in_users.split(',').length : 1) : 0,
-      organizer: organizerNameProfilePic.find(organizer => organizer.id === event.organizer_user_id)
+      checked_in_users_count: event.checked_in_users
+        ? event.checked_in_users.includes(",")
+          ? event.checked_in_users.split(",").length
+          : 1
+        : 0,
+      organizer: organizerNameProfilePic.find(
+        (organizer) => organizer.id === event.organizer_user_id
+      ),
     }));
 
     return { causeType, count, causeList: causeListWithCount };
@@ -44,7 +56,6 @@ const getCauseById = async (causeId) => {
     return error;
   }
 };
-
 
 // Get one event
 const getEvent = async (id) => {
@@ -61,46 +72,68 @@ const getEvent = async (id) => {
 };
 
 // Create a new event
+// const createEvent2 = async (event) => {
+//   try {
+//     const newEvent = await db.one(
+//       'INSERT INTO "Event" (title, description, date, time, address,latitude,longitude, img_link, organizer_user_id, cause_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *',
+//       [
+//         event.title,
+//         event.description,
+//         event.date,
+//         event.time,
+//         event.address,
+//         event.latitude,
+//         event.longitude,
+//         event.img_link,
+//         event.organizer_user_id,
+//         event.cause_id,
+//       ]
+//     );
+//     // helper function w/ google api to get 4326, lat and long from address
+//     const geoCoordinates = await helperFunction.geocode(newEvent.address);
+//     newEvent.location = geoCoordinates.location;
+//     newEvent.latitude = geoCoordinates.latitude;
+//     newEvent.longitude = geoCoordinates.longitude;
+
+//     // Update the row in the database with the geoCoordinates
+//     await db.none(
+//       'UPDATE "Event" SET location = $1, latitude = $2, longitude = $3 WHERE id = $4',
+//       [
+//         geoCoordinates.location,
+//         geoCoordinates.latitude,
+//         geoCoordinates.longitude,
+//         newEvent.id,
+//       ]
+//     );
+
+//     return newEvent;
+//   } catch (error) {
+//     return error;
+//   }
+// };
+
 const createEvent = async (event) => {
   try {
     const newEvent = await db.one(
-      'INSERT INTO "Event" (title, description, date, time, address, city, state, zip, img_link, organizer_user_id, checked_in_users, cause_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *',
+      'INSERT INTO "Event" (title, description, date, time, address,latitude,longitude, img_link, organizer_user_id,  cause_id,category) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10,$11) RETURNING *',
       [
-        event.name,
         event.title,
         event.description,
         event.date,
         event.time,
         event.address,
-        event.city,
-        event.state,
-        event.zip,
+        event.latitude,
+        event.longitude,
         event.img_link,
         event.organizer_user_id,
-        event.checked_in_users,
         event.cause_id,
-      ]
-    );
-    //helper function w/ google api to get 4326, lat and long from address
-    const geoCoordinates = await helperFunction.geocode(newEvent.address);
-    newEvent.location = geoCoordinates.location;
-    newEvent.latitude = geoCoordinates.latitude;
-    newEvent.longitude = geoCoordinates.longitude;
-
-    // Update the row in the database with the geoCoordinates
-    await db.none(
-      'UPDATE "Event" SET location = $1, latitude = $2, longitude = $3 WHERE id = $4',
-      [
-        geoCoordinates.location,
-        geoCoordinates.latitude,
-        geoCoordinates.longitude,
-        newEvent.id,
+        event.category,
       ]
     );
 
     return newEvent;
   } catch (error) {
-    return error;
+    throw error;
   }
 };
 
@@ -111,10 +144,16 @@ const userCheckIn = async (eventID, userID) => {
       'UPDATE "Event_attendee" SET user_id = array_append(user_id, $1) WHERE event_id = $2',
       [userID, eventID]
     );
-    return 'Check-in successful';
+    return "Check-in successful";
   } catch (error) {
     return error;
   }
 };
 
-module.exports = { getAllEvents, getEvent, createEvent, getCauseById, userCheckIn };
+module.exports = {
+  getAllEvents,
+  getEvent,
+  createEvent,
+  getCauseById,
+  userCheckIn,
+};

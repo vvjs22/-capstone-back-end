@@ -23,6 +23,36 @@ const getCurrUser = async (id) => {
   }
 };
 
+// Create User
+const createUser = async (user) => {
+  try {
+    const { id, email, f_name, l_name, user_profile_link } = user;
+    const userExists = await checkUserExists(email);
+    console.log("userExists", userExists);
+    if (userExists) {
+      return await db.one('SELECT 1 FROM "User" WHERE email = $1', email);
+    } else {
+      const currUser = await db.one(
+        'INSERT INTO "User" (id,email,f_name,l_name,user_profile_link) VALUES($1,$2,$3,$4,$5) RETURNING *',
+        [id, email, f_name, l_name, user_profile_link]
+      );
+      return currUser;
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+async function checkUserExists(email) {
+  try {
+    const query = 'SELECT EXISTS(SELECT 1 FROM "User" WHERE email = $1)';
+    const exists = await db.one(query, [email], (row) => row.exists);
+    return exists;
+  } catch (error) {
+    console.error("Error checking user existence:", error);
+    throw error;
+  }
+}
 
 // const getEvent = async (id) => {
 //   try {
@@ -79,4 +109,4 @@ const getCurrUser = async (id) => {
 //   }
 // };
 
-module.exports = { getAllUsers, getCurrUser };
+module.exports = { getAllUsers, getCurrUser, createUser };

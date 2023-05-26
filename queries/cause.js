@@ -6,7 +6,13 @@ const helpers = require("../helperFunctions/helperFunction.js");
 // Select all events
 const getAllCauses = async () => {
     try {
-      const allEvents = await db.any('SELECT * FROM "Cause" ORDER BY id ASC');
+      const allEvents = await db.any(`SELECT c.*,
+        COUNT(e.id) AS event_count
+        FROM "Cause" AS c 
+        join "Event" AS e
+        ON c.id=e.cause_id
+        GROUP BY c.id,c.type
+        ORDER BY c.id ASC;`);
       return allEvents;
     } catch (error) {
       return error;

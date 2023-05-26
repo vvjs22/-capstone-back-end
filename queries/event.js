@@ -7,14 +7,15 @@ const helpers = require("../helperFunctions/helperFunction.js");
 const getAllEvents = async () => {
   // Going to add user name and photo
   try {
-    const allEvents = await db.any(`'SELECT 
-    e.id,
-    e.title,
-    e.organizer_user_id,
-    u.f_name 
-    FROM "Event" AS e
-    join "User" AS u
-    ON e.organizer_user_id = u.id'`);
+    const allEvents = await db.any(`SELECT 
+      e.*,
+      u.f_name,
+      u.l_name,
+      u.user_profile_link 
+  FROM "Event" AS e
+  JOIN "User" AS u
+      ON e.organizer_user_id = u.id;`
+  );
     return allEvents;
   } catch (error) {
     return error;
@@ -24,7 +25,7 @@ const getAllEvents = async () => {
 const getCauseById = async (causeId) => {
   try {
     const causeType = await db.one('SELECT * FROM "Cause" WHERE id = $1', causeId);
-    const count = await db.one('SELECT COUNT(*) FROM "Event" WHERE cause_id = $1', causeId);
+    const event_count = await db.one('SELECT COUNT(*) FROM "Event" WHERE cause_id = $1', causeId);
     const causeList = await db.any(
       'SELECT ' +
       '  title, description, organizer_user_id, checked_in_users, address, city, state ' +
@@ -47,7 +48,7 @@ const getCauseById = async (causeId) => {
 }));
 
 
-    return { causeType, count, causeList: causeListWithCount };
+    return { causeType, event_count, causeList: causeListWithCount };
   } catch (error) {
     return error;
   }
@@ -59,9 +60,17 @@ const getEvent = async (id) => {
   try {
     const eventId = parseInt(id); // Id is a integer
     const oneEvent = await db.one(
-      'SELECT * FROM "Event" WHERE id = $1',
-      eventId
-    );
+      `SELECT 
+      e.*,
+      u.f_name,
+      u.l_name,
+      u.user_profile_link 
+    FROM "Event" AS e
+    JOIN "User" AS u
+      ON e.organizer_user_id = u.id
+    WHERE e.id = $1`,
+    eventId
+  );
     return oneEvent;
   } catch (error) {
     return error;

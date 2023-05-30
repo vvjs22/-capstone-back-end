@@ -124,14 +124,29 @@ const createEvent = async (event) => {
 // Allow user to check-in to event
 const userCheckIn = async (eventID, userID) => {
   try {
+    // Update the "Event_attendee" table to append the user_id
     await db.none(
       'UPDATE "Event_attendee" SET user_id = array_append(user_id, $1) WHERE event_id = $2',
       [userID, eventID]
     );
+
+    // Get the updated count of checked-in users for the event
+    const checkedInUsersCount = await db.one(
+      'SELECT array_length(user_id, 1) FROM "Event_attendee" WHERE event_id = $1',
+      eventID
+    );
+
+    // Update the "Event" table with the latest count
+    await db.none(
+      'UPDATE "Event" SET checked_in_users = $1 WHERE id = $2',
+      [checkedInUsersCount, eventID]
+    );
+
     return 'Check-in successful';
   } catch (error) {
     return error;
   }
 };
+
 
 module.exports = { getAllEvents, getEvent, createEvent, getCauseById, userCheckIn };

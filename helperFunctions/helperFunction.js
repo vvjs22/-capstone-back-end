@@ -1,3 +1,5 @@
+const cors = require("cors");
+const axios = require("axios");
 const db = require('../happndb/dbConfig.js');
 
 async function getAddresses() {
@@ -35,18 +37,22 @@ async function getAddresses() {
   async function updateAddresses() {
     try {
       const addresses = await getAddresses(); // Retrieve addresses
-      for (let row of addresses.rows) {
-        const POINT = await geocode(row.address); // Use geocode function
-        await pool.query('UPDATE "Event" SET location = $1 WHERE id = $2', [POINT, row.id]);
+      for (let row of addresses) {
+        const geocodedData = await geocode(row.address); // Use geocode function
+        if (geocodedData) {
+          const { location, latitude, longitude } = geocodedData;
+          await db.any('UPDATE "Event" SET location = $1, latitude = $2, longitude = $3 WHERE id = $4', [location, latitude, longitude, row.id]);
+        }
       }
     } catch (error) {
       console.error(error);
     }
   }
+
   
 
     
   
-//   updateAddresses(); // Call the updateAddresses function
+  updateAddresses(); // Call the updateAddresses function
   
 module.exports = { getAddresses, geocode, updateAddresses };

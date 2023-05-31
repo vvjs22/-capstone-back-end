@@ -74,7 +74,7 @@ events.post("/", async (req, res) => {
 });
 
 //CHECK-IN
-events.post("/:eventId/checkin/:userId", async (req, res) => {
+events.get("/:eventId/checkin/:userId", async (req, res) => {
   try {
     const { eventID, userID } = req.params;
 

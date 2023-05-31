@@ -124,25 +124,30 @@ const createEvent = async (event) => {
 // Allow user to check-in to event
 const userCheckIn = async (eventID, userID) => {
   try {
-    // Update the "Event_attendee" table to append the user_id
-    await db.none(
-      'UPDATE "Event_attendee" SET user_id = array_append(user_id, $1) WHERE event_id = $2',
-      [userID, eventID]
-    );
+ // Check if the user is already checked-in for the event
+ const existingCheckIn = await db.oneOrNone(
+  'SELECT * FROM "Event_attendee" WHERE event_id = $1 AND user_id = $2',
+  [eventID, userID]
+);
 
-    // Get the updated count of checked-in users for the event
-    const checkedInUsersCount = await db.one(
-      'SELECT array_length(user_id, 1) FROM "Event_attendee" WHERE event_id = $1',
-      eventID
-    );
+if (existingCheckIn) {
+  // User is already checked-in Ask Steven error or message
+  return 'User already checked-in';
+}
+
+// Insert a new row for the user check-in
+await db.none(
+  'INSERT INTO "Event_attendee" (event_id, user_id) VALUES ($1, $2)',
+  [eventID, userID]
+);
 
     // Update the "Event" table with the latest count
-    await db.none(
-      'UPDATE "Event" SET checked_in_users = $1 WHERE id = $2',
-      [checkedInUsersCount, eventID]
+  const event =  await db.none(
+      'UPDATE "Event" SET checked_in_users = checked_in_users + 1 WHERE id = $1 RETURNING *',
+      [eventID]
     );
 
-    return 'Check-in successful';
+    return event;
   } catch (error) {
     return error;
   }

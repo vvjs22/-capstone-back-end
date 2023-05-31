@@ -76,12 +76,11 @@ events.post("/", async (req, res) => {
 //CHECK-IN
 events.get("/:eventId/checkin/:userId", async (req, res) => {
   try {
-    const { eventID, userID } = req.params;
-
+    const { eventId, userId } = req.params;
     // Call the checkIn function to add the user to the attendee list
-    const result = await userCheckIn(eventID, userID);
+    const result = await userCheckIn(eventId, userId);
 
-    res.json({ Event: result });
+    res.json({ event: result });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "An error occurred" });

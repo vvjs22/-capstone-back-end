@@ -142,13 +142,14 @@ await db.none(
 );
 
     // Update the "Event" table with the latest count
-  const event =  await db.none(
+  const event =  await db.one(
       'UPDATE "Event" SET checked_in_users = checked_in_users + 1 WHERE id = $1 RETURNING *',
       [eventID]
     );
 
     return event;
   } catch (error) {
+    console.error(error);
     return error;
   }
 };

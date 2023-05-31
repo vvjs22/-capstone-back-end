@@ -132,7 +132,7 @@ const userCheckIn = async (eventID, userID) => {
 
 if (existingCheckIn) {
   // User is already checked-in Ask Steven error or message
-  return 'User already checked-in';
+  throw new Error('User is already checked-in');
 }
 
 // Insert a new row for the user check-in

@@ -5,6 +5,7 @@ DROP TABLE "Cause";
 CREATE EXTENSION IF NOT EXISTS postgis;
 CREATE EXTENSION IF NOT EXISTS postgis_topology;
 
+\c happndb;
 
 -- Create the User table
 CREATE TABLE "User" (
@@ -17,6 +18,7 @@ CREATE TABLE "User" (
   twitch_channel TEXT,
   user_profile_link TEXT,
   badge_data JSONB CHECK (badge_data::text ILIKE ANY (ARRAY['%organizer%', '%activist%', '%advocate%']) OR badge_data IS NULL)
+
 );
 
 -- Create the Cause table with a primary key
@@ -30,8 +32,8 @@ CREATE TABLE "Cause" (
     'disability',
     'veteran',
     'mental'
-  ))
-  name Text;
+  )),
+  name Text
 );
 
 -- Create the Event table
@@ -62,7 +64,7 @@ CREATE TABLE "Event" (
   -- location geography(POINT, 4326),
   latitude double precision,
   longitude double precision,
-  FOREIGN KEY (organizer_user_id) REFERENCES "User" (id),
+  FOREIGN KEY (organizer_user_id) REFERENCES "User"(id),
   FOREIGN KEY (cause_id) REFERENCES "Cause"(id)
 );
 
@@ -71,7 +73,7 @@ CREATE TABLE "Event" (
 CREATE TABLE "Live_video" (
   id SERIAL PRIMARY KEY,
   video_id VARCHAR(255) NOT NULL,
-  user_id INTEGER[],
+  user_id TEXT,
   event_id INTEGER NOT NULL,
   FOREIGN KEY (user_id) REFERENCES "User" (id),
   FOREIGN KEY (event_id) REFERENCES "Event" (id)

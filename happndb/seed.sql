@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS "Event"(
   organizer_user_id INTEGER NOT NULL,
   checked_in_users INTEGER,
   FOREIGN KEY (organizer_user_id) REFERENCES "User" (id)
-);
+-- );
 
 insert into "Event" (id, title, description, date, time, category, address, city, state, zip, img_link, organizer_user_id, checked_in_users, location, latitude, longitude) values (1, 'cras mi pede malesuada in imperdiet et commodo vulputate justo in blandit ultrices enim', 'Integer tincidunt ante vel ipsum. Praesent blandit lacinia erat. Vestibulum sed magna at nunc commodo placerat.
 
@@ -98,7 +98,7 @@ INSERT INTO "Live_video"(id,video_id,user_id,event_id) VALUES (16,'#596',6,7);
 INSERT INTO "Live_video"(id,video_id,user_id,event_id) VALUES (17,'#ac6',100,2);
 INSERT INTO "Live_video"(id,video_id,user_id,event_id) VALUES (18,'#1bb',200,3);
 
-Create the Event_attendee table with a primary key
+-- Create the Event_attendee table with a primary key
 CREATE TABLE "Event_attendee" (
   user_id INTEGER NOT NULL,
   event_id INTEGER NOT NULL,

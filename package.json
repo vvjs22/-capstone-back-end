@@ -4,9 +4,12 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "moment": "^2.29.4",
     "nodemon": "^2.0.22",
     "pg": "^8.11.0",
-    "pg-promise": "^11.4.3"
+    "pg-promise": "^11.4.3",
+    "uuid4": "^2.0.3"
   },
   "name": "-capstone-back-end",
   "description": "9.2 Bo Latt, Monique Correa, James Scott Capstone Back End",

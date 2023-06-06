@@ -14,8 +14,7 @@ const getAllEvents = async () => {
       u.user_profile_link 
   FROM "Event" AS e
   JOIN "User" AS u
-      ON e.organizer_user_id = u.id;`
-  );
+      ON e.organizer_user_id = u.id;`);
     return allEvents;
   } catch (error) {
     return error;
@@ -24,36 +23,42 @@ const getAllEvents = async () => {
 
 const getCauseById = async (causeId) => {
   try {
-    const causeType = await db.one('SELECT * FROM "Cause" WHERE id = $1', causeId);
-    const event_count = await db.one('SELECT COUNT(*) FROM "Event" WHERE cause_id = $1', causeId);
+    const causeType = await db.one(
+      'SELECT * FROM "Cause" WHERE id = $1',
+      causeId
+    );
+    const event_count = await db.one(
+      'SELECT COUNT(*) FROM "Event" WHERE cause_id = $1',
+      causeId
+    );
     const causeList = await db.any(
-      'SELECT ' +
-      '  title, description, organizer_user_id, checked_in_users, address, city, state ' +
-      'FROM "Event" ' +
-      'WHERE cause_id = $1',
+      "SELECT " +
+        "  title, description, organizer_user_id, checked_in_users, address, city, state " +
+        'FROM "Event" ' +
+        "WHERE cause_id = $1",
       causeId
     );
 
     // Get the organizer_user_id First, Last and Profile Pic for each event card
-    const organizerIds = causeList.map(event => event.organizer_user_id);
+    const organizerIds = causeList.map((event) => event.organizer_user_id);
     const organizerNameProfilePic = await db.any(
       'SELECT id, f_name, l_name, user_profile_link FROM "User" WHERE id = ANY($1)',
       [organizerIds]
     );
 
-  const causeListWithCount = causeList.map(event => ({
-  ...event,
-  // checked_in_users_count: event.checked_in_users ? db.one('SELECT array_length($1, 1) FROM "Event"', [event.checked_in_users]) || 0 : 0,
-  organizer: organizerNameProfilePic.find(organizer => organizer.id === event.organizer_user_id)
-}));
-
+    const causeListWithCount = causeList.map((event) => ({
+      ...event,
+      // checked_in_users_count: event.checked_in_users ? db.one('SELECT array_length($1, 1) FROM "Event"', [event.checked_in_users]) || 0 : 0,
+      organizer: organizerNameProfilePic.find(
+        (organizer) => organizer.id === event.organizer_user_id
+      ),
+    }));
 
     return { causeType, event_count, causeList: causeListWithCount };
   } catch (error) {
     return error;
   }
 };
-
 
 // Get one event
 const getEvent = async (id) => {
@@ -69,8 +74,8 @@ const getEvent = async (id) => {
     JOIN "User" AS u
       ON e.organizer_user_id = u.id
     WHERE e.id = $1`,
-    eventId
-  );
+      eventId
+    );
     return oneEvent;
   } catch (error) {
     return error;
@@ -124,25 +129,25 @@ const createEvent = async (event) => {
 // Allow user to check-in to event
 const userCheckIn = async (eventID, userID) => {
   try {
- // Check if the user is already checked-in for the event
- const existingCheckIn = await db.oneOrNone(
-  'SELECT * FROM "Event_attendee" WHERE event_id = $1 AND user_id = $2',
-  [eventID, userID]
-);
+    // Check if the user is already checked-in for the event
+    const existingCheckIn = await db.oneOrNone(
+      'SELECT * FROM "Event_attendee" WHERE event_id = $1 AND user_id = $2',
+      [eventID, userID]
+    );
 
-if (existingCheckIn) {
-  // User is already checked-in Ask Steven error or message
-  throw new Error('User is already checked-in');
-}
+    if (existingCheckIn) {
+      // User is already checked-in Ask Steven error or message
+      throw new Error("User is already checked-in");
+    }
 
-// Insert a new row for the user check-in
-await db.none(
-  'INSERT INTO "Event_attendee" (event_id, user_id) VALUES ($1, $2)',
-  [eventID, userID]
-);
+    // Insert a new row for the user check-in
+    await db.none(
+      'INSERT INTO "Event_attendee" (event_id, user_id) VALUES ($1, $2)',
+      [eventID, userID]
+    );
 
     // Update the "Event" table with the latest count
-  const event =  await db.one(
+    const event = await db.one(
       'UPDATE "Event" SET checked_in_users = checked_in_users + 1 WHERE id = $1 RETURNING *',
       [eventID]
     );
@@ -150,9 +155,14 @@ await db.none(
     return event;
   } catch (error) {
     console.error(error);
-    return error;
+    throw error;
   }
 };
 
-
-module.exports = { getAllEvents, getEvent, createEvent, getCauseById, userCheckIn };
+module.exports = {
+  getAllEvents,
+  getEvent,
+  createEvent,
+  getCauseById,
+  userCheckIn,
+};

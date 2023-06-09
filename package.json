@@ -18,6 +18,7 @@
   "scripts": {
     "db:init": "psql -U postgres -f happndb/schema.sql",
     "db:seed": "psql -U postgres -f happndb/seed.sql",
+    "db:seed2": "psql -U postgres -f happndb/seed2.sql",
     "start": "nodemon server.js",
     "test": "jest --runInBand"
   },

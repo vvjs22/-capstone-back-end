@@ -1,6 +1,7 @@
 const express = require("express");
 const live = express.Router();
 const moment = require("moment");
+const { saveLiveVideo } = require("../queries/live");
 // const token = require("../100ms/token");
 
 require("dotenv").config();
@@ -26,11 +27,21 @@ live.post("/create-room", async (req, res) => {
 
   try {
     // const roomData = await apiService.post("/rooms",payload);
+    const { event_id, streamer_user_id } = req.body;
     const roomData = await apiService.post("/rooms");
-
     const roomID = await roomData.id;
     console.log("roomID", roomID);
     const roomCodes = await apiService.post("/room-codes/room/" + roomID);
+    const live = {
+      event_id,
+      streamer_user_id,
+      room_id: roomID,
+      broadcaster_code: roomCodes.data[0].code,
+      viewer_code: roomCodes.data[1].code,
+    };
+    console.log("live", live);
+    const savedVideo = await saveLiveVideo(live);
+    console.log("savedVideo", savedVideo);
     res.json({ roomData, roomCodes });
   } catch (err) {
     console.error(err);

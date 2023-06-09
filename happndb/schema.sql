@@ -2,10 +2,10 @@ DROP DATABASE IF EXISTS happndb;
 CREATE database happndb;
 DROP TABLE "User";
 DROP TABLE "Cause";
+\c happndb;
 CREATE EXTENSION IF NOT EXISTS postgis;
 CREATE EXTENSION IF NOT EXISTS postgis_topology;
 
-\c happndb;
 
 -- Create the User table
 CREATE TABLE "User" (
@@ -61,7 +61,7 @@ CREATE TABLE "Event" (
   img_link TEXT,
   organizer_user_id TEXT NOT NULL,
   checked_in_users INTEGER,
-  -- location geography(POINT, 4326),
+  location geography(POINT, 4326),
   latitude double precision,
   longitude double precision,
   FOREIGN KEY (organizer_user_id) REFERENCES "User"(id),
@@ -72,16 +72,20 @@ CREATE TABLE "Event" (
 -- Create the Live_video table
 CREATE TABLE "Live_video" (
   id SERIAL PRIMARY KEY,
-  video_id VARCHAR(255) NOT NULL,
-  user_id TEXT,
+  -- video_id VARCHAR(255) NOT NULL,
+  -- user_id TEXT,
   event_id INTEGER NOT NULL,
-  FOREIGN KEY (user_id) REFERENCES "User" (id),
+  streamer_user_id TEXT, 
+  room_id TEXT,
+  broadcaster_code TEXT, 
+  viewer_code TEXT, 
+  FOREIGN KEY (streamer_user_id) REFERENCES "User" (id),
   FOREIGN KEY (event_id) REFERENCES "Event" (id)
 );
 
 -- Create the Event_attendee table with a primary key
 CREATE TABLE "Event_attendee" (
-  user_id INTEGER NOT NULL,
+  user_id TEXT NOT NULL,
   event_id INTEGER NOT NULL,
   FOREIGN KEY (event_id) REFERENCES "Event" (id),
   PRIMARY KEY (user_id, event_id)

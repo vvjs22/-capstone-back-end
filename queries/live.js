@@ -5,6 +5,14 @@ const getAllLiveVideos = async () => {
   return videos;
 };
 
+const getVideosByEventID = async (eventID) => {
+  const videos = await db.any(
+    'SELECT * FROM "Live_video" WHERE event_id = $1',
+    [eventID]
+  );
+  return videos;
+};
+
 const saveLiveVideo = async (live) => {
   const { event_id, room_id, broadcaster_code, viewer_code, streamer_user_id } =
     live;
@@ -15,4 +23,4 @@ const saveLiveVideo = async (live) => {
   return savedLive;
 };
 
-module.exports = { saveLiveVideo, getAllLiveVideos };
+module.exports = { saveLiveVideo, getAllLiveVideos, getVideosByEventID };

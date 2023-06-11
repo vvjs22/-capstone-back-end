@@ -1,7 +1,11 @@
 const express = require("express");
 const live = express.Router();
 const moment = require("moment");
-const { saveLiveVideo, getAllLiveVideos } = require("../queries/live");
+const {
+  saveLiveVideo,
+  getAllLiveVideos,
+  getVideosByEventID,
+} = require("../queries/live");
 // const token = require("../100ms/token");
 
 require("dotenv").config();
@@ -15,6 +19,18 @@ const apiService = new APIService(tokenService);
 live.get("/", async (req, res) => {
   try {
     const videos = await getAllLiveVideos();
+    console.log(videos);
+    res.json(videos);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "An error occurred" });
+  }
+});
+
+live.get("/:eventID", async (req, res) => {
+  const { eventID } = req.params;
+  try {
+    const videos = await getVideosByEventID(eventID);
     console.log(videos);
     res.json(videos);
   } catch (err) {
@@ -39,12 +55,24 @@ live.post("/create-room", async (req, res) => {
     const roomID = await roomData.id;
     console.log("roomID", roomID);
     const roomCodes = await apiService.post("/room-codes/room/" + roomID);
+    console.log("room Codes", roomCodes);
+    const broadcasterCode =
+      roomCodes.data[0].role == "broadcaster"
+        ? roomCodes.data[0].code
+        : roomCodes.data[1].code;
+    const viewerCode =
+      roomCodes.data[0].role == "broadcaster"
+        ? roomCodes.data[1].code
+        : roomCodes.data[0].code;
+
     const live = {
       event_id,
       streamer_user_id,
       room_id: roomID,
-      broadcaster_code: roomCodes.data[0].code,
-      viewer_code: roomCodes.data[1].code,
+      //   broadcaster_code: roomCodes.data[0].code,
+      //   viewer_code: roomCodes.data[1].code,
+      broadcaster_code: broadcasterCode,
+      viewer_code: viewerCode,
     };
     console.log("live", live);
     const savedVideo = await saveLiveVideo(live);

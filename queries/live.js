@@ -1,5 +1,10 @@
 const db = require("../happndb/dbConfig");
 
+const getAllLiveVideos = async () => {
+  const videos = await db.any('SELECT * FROM "Live_video"');
+  return videos;
+};
+
 const saveLiveVideo = async (live) => {
   const { event_id, room_id, broadcaster_code, viewer_code, streamer_user_id } =
     live;
@@ -10,4 +15,4 @@ const saveLiveVideo = async (live) => {
   return savedLive;
 };
 
-module.exports = { saveLiveVideo };
+module.exports = { saveLiveVideo, getAllLiveVideos };

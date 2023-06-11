@@ -1,7 +1,7 @@
 const express = require("express");
 const live = express.Router();
 const moment = require("moment");
-const { saveLiveVideo } = require("../queries/live");
+const { saveLiveVideo, getAllLiveVideos } = require("../queries/live");
 // const token = require("../100ms/token");
 
 require("dotenv").config();
@@ -12,8 +12,15 @@ const { TokenService } = require("../100ms/TokenService");
 const tokenService = new TokenService();
 const apiService = new APIService(tokenService);
 
-live.get("/", (req, res) => {
-  res.send("live");
+live.get("/", async (req, res) => {
+  try {
+    const videos = await getAllLiveVideos();
+    console.log(videos);
+    res.json(videos);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "An error occurred" });
+  }
 });
 
 // Create a new room, either randomly or with the requested configuration

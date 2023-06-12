@@ -3,8 +3,8 @@ CREATE database happndb;
 DROP TABLE "User";
 DROP TABLE "Cause";
 \c happndb;
-CREATE EXTENSION IF NOT EXISTS postgis;
-CREATE EXTENSION IF NOT EXISTS postgis_topology;
+-- CREATE EXTENSION IF NOT EXISTS postgis;
+-- CREATE EXTENSION IF NOT EXISTS postgis_topology;
 
 
 -- Create the User table
@@ -16,9 +16,8 @@ CREATE TABLE "User" (
   l_name VARCHAR(255) NOT NULL,
   interests VARCHAR(255),
   twitch_channel TEXT,
-  user_profile_link TEXT,
-  badge_data JSONB CHECK (badge_data::text ILIKE ANY (ARRAY['%organizer%', '%activist%', '%advocate%']) OR badge_data IS NULL)
-
+  user_profile_link TEXT
+  -- badge_data JSONB CHECK (badge_data::text ILIKE ANY (ARRAY['%organizer%', '%activist%', '%advocate%']) OR badge_data IS NULL)
 );
 
 -- Create the Cause table with a primary key
@@ -61,7 +60,7 @@ CREATE TABLE "Event" (
   img_link TEXT,
   organizer_user_id TEXT NOT NULL,
   checked_in_users INTEGER,
-  location geography(POINT, 4326),
+  -- location geography(POINT, 4326),
   latitude double precision,
   longitude double precision,
   FOREIGN KEY (organizer_user_id) REFERENCES "User"(id),

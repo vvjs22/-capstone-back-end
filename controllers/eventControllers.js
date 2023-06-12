@@ -82,8 +82,8 @@ events.get("/:eventId/checkin/:userId", async (req, res) => {
 
     res.json({ event: result });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "An error occurred" });
+    // console.error(error);
+    res.status(500).json({ error: error.message });
   }
 });
 

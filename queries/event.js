@@ -104,21 +104,21 @@ const createEvent = async (event) => {
       ]
     );
     //helper function w/ google api to get 4326, lat and long from address
-    const geoCoordinates = await helperFunction.geocode(newEvent.address);
-    newEvent.location = geoCoordinates.location;
-    newEvent.latitude = geoCoordinates.latitude;
-    newEvent.longitude = geoCoordinates.longitude;
+    // const geoCoordinates = await helperFunction.geocode(newEvent.address);
+    // newEvent.location = geoCoordinates.location;
+    // newEvent.latitude = geoCoordinates.latitude;
+    // newEvent.longitude = geoCoordinates.longitude;
 
     // Update the row in the database with the geoCoordinates
-    await db.none(
-      'UPDATE "Event" SET location = $1, latitude = $2, longitude = $3 WHERE id = $4',
-      [
-        geoCoordinates.location,
-        geoCoordinates.latitude,
-        geoCoordinates.longitude,
-        newEvent.id,
-      ]
-    );
+    // await db.none(
+    //   'UPDATE "Event" SET location = $1, latitude = $2, longitude = $3 WHERE id = $4',
+    //   [
+    //     geoCoordinates.location,
+    //     geoCoordinates.latitude,
+    //     geoCoordinates.longitude,
+    //     newEvent.id,
+    //   ]
+    // );
 
     return newEvent;
   } catch (error) {
@@ -134,7 +134,7 @@ const userCheckIn = async (eventID, userID) => {
       'SELECT * FROM "Event_attendee" WHERE event_id = $1 AND user_id = $2',
       [eventID, userID]
     );
-
+    console.log("existingCheckIn", existingCheckIn);
     if (existingCheckIn) {
       // User is already checked-in Ask Steven error or message
       throw new Error("User is already checked-in");

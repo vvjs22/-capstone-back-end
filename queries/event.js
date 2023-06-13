@@ -17,7 +17,7 @@ const getAllEvents = async () => {
       ON e.organizer_user_id = u.id;`);
     return allEvents;
   } catch (error) {
-    return error;
+    throw error;
   }
 };
 
@@ -56,7 +56,8 @@ const getCauseById = async (causeId) => {
 
     return { causeType, event_count, causeList: causeListWithCount };
   } catch (error) {
-    return error;
+    console.log(error);
+    throw error;
   }
 };
 
@@ -78,7 +79,8 @@ const getEvent = async (id) => {
     );
     return oneEvent;
   } catch (error) {
-    return error;
+    console.log(error);
+    throw error;
   }
 };
 
@@ -121,7 +123,8 @@ const createEvent = async (event) => {
 
     return newEvent;
   } catch (error) {
-    return error;
+    console.log(error);
+    throw error;
   }
 };
 

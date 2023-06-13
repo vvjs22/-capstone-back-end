@@ -2,6 +2,7 @@ DROP DATABASE IF EXISTS happndb;
 CREATE database happndb;
 
 \c happndb;
+DROP TABLE "Cause" ,"User" ,"Event" , "Live_video", "Event_attendee";
 -- CREATE EXTENSION IF NOT EXISTS postgis;
 -- CREATE EXTENSION IF NOT EXISTS postgis_topology;
 

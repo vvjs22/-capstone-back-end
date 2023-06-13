@@ -87,7 +87,7 @@ const createEvent = async (event) => {
   console.log("event", event);
   try {
     const newEvent = await db.one(
-      'INSERT INTO "Event" (title, description, date, time, address, city, state, zip, img_link, organizer_user_id, cause_id,category) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *',
+      'INSERT INTO "Event" (title, description, date, time, address, city, state, zip, img_link, organizer_user_id, cause_id, category) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10,$11,$12) RETURNING *',
       [
         event.title,
         event.description,

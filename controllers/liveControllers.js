@@ -77,7 +77,8 @@ live.post("/create-room", async (req, res) => {
     console.log("live", live);
     const savedVideo = await saveLiveVideo(live);
     console.log("savedVideo", savedVideo);
-    res.json({ roomData, roomCodes });
+    // res.json({ roomData, roomCodes });
+    res.json(live);
   } catch (err) {
     console.error(err);
     res.status(500).send("Internal Server Error");

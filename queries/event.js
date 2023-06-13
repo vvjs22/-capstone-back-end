@@ -84,11 +84,11 @@ const getEvent = async (id) => {
 
 // Create a new event
 const createEvent = async (event) => {
+  console.log("event", event);
   try {
     const newEvent = await db.one(
-      'INSERT INTO "Event" (title, description, date, time, address, city, state, zip, img_link, organizer_user_id, checked_in_users, cause_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *',
+      'INSERT INTO "Event" (title, description, date, time, address, city, state, zip, img_link, organizer_user_id, cause_id,category) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *',
       [
-        event.name,
         event.title,
         event.description,
         event.date,
@@ -99,8 +99,9 @@ const createEvent = async (event) => {
         event.zip,
         event.img_link,
         event.organizer_user_id,
-        event.checked_in_users,
+        // event.checked_in_users,
         event.cause_id,
+        event.category,
       ]
     );
     //helper function w/ google api to get 4326, lat and long from address
@@ -122,7 +123,8 @@ const createEvent = async (event) => {
 
     return newEvent;
   } catch (error) {
-    return error;
+    console.log(error);
+    throw error;
   }
 };
 

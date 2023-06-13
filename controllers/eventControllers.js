@@ -38,34 +38,8 @@ events.get("/:id", async (req, res) => {
 events.post("/", async (req, res) => {
   console.log(req.body);
   try {
-    const {
-      cause_id,
-      title,
-      description,
-      date,
-      time,
-      address,
-      latitude,
-      longitude,
-      img_link,
-      organizer_user_id,
-      category,
-      // checked_in_users,
-    } = req.body;
-    const newEvent = await createEvent({
-      cause_id,
-      title,
-      description,
-      date,
-      time,
-      address,
-      img_link,
-      latitude,
-      longitude,
-      organizer_user_id,
-      category,
-      // checked_in_users,
-    });
+    const event = req.body;
+    const newEvent = await createEvent(event);
     res.json(newEvent);
   } catch (error) {
     console.error(error);
@@ -82,7 +56,7 @@ events.get("/:eventId/checkin/:userId", async (req, res) => {
 
     res.json({ event: result });
   } catch (error) {
-    // console.error(error);
+    console.error(error);
     res.status(500).json({ error: error.message });
   }
 });

@@ -1,7 +1,7 @@
 const db = require("../happndb/dbConfig");
 
 const getAllLiveVideos = async () => {
-  const videos = await db.any('SELECT * FROM "Live_video"');
+  const videos = await db.any('SELECT * FROM "Live_video" ORDER BY id ASC');
   return videos;
 };
 

@@ -1,7 +1,6 @@
 DROP DATABASE IF EXISTS happndb;
 CREATE database happndb;
-DROP TABLE "User";
-DROP TABLE "Cause";
+
 \c happndb;
 -- CREATE EXTENSION IF NOT EXISTS postgis;
 -- CREATE EXTENSION IF NOT EXISTS postgis_topology;
@@ -54,8 +53,8 @@ CREATE TABLE "Event" (
   address VARCHAR(255) NOT NULL,
   -- city VARCHAR(255)  CHECK (LOWER(city) IN ('brooklyn', 'queens', 'manhattan', 'staten island', 'bronx', 'new york')) ,
   -- state VARCHAR(255)  CHECK (LOWER(state) = 'ny'),
-  -- city TEXT, 
-  -- state VARCHAR(2),
+  city TEXT, 
+  state VARCHAR(2),
   zip INTEGER ,
   img_link TEXT,
   organizer_user_id TEXT NOT NULL,

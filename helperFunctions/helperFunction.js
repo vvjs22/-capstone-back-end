@@ -5,7 +5,7 @@ const db = require("../happndb/dbConfig.js");
 async function getAddresses() {
   try {
     const addresses = await db.any(
-      'SELECT id, address FROM "Event" WHERE location IS NULL OR latitude IS NULL OR longitude IS NULL OR city IS NULL OR state IS NULL'
+      'SELECT id, address FROM "Event" WHERE location IS NULL OR latitude IS NULL OR longitude IS NULL OR city IS NULL OR state IS NULL OR zip IS NULL'
     );
     return addresses; // Return the addresses from the function
   } catch (err) {
@@ -33,6 +33,8 @@ async function geocode(address) {
     let borough = null;
     let city = null;
     let state = null;
+    let zip = null;
+
 
     for (const component of addressComponents) {
       if (component.types.includes("administrative_area_level_2")) {
@@ -43,6 +45,9 @@ async function geocode(address) {
       }
       if (component.types.includes("administrative_area_level_1")) {
         state = component.short_name;
+      }
+      if (component.types.includes("postal_code")) {
+        zip = component.long_name;
       }
     }
 
@@ -55,6 +60,7 @@ async function geocode(address) {
       longitude: lng,
       city: finalCity,
       state: state,
+      zip: zip,
     };
   } catch (err) {
     console.error(err.message);
@@ -67,10 +73,10 @@ async function updateAddresses() {
     for (let row of addresses) {
       const geocodedData = await geocode(row.address); // Use geocode function
       if (geocodedData) {
-        const { location, latitude, longitude, city, state } = geocodedData;
+        const { location, latitude, longitude, city, state, zip } = geocodedData;
         await db.any(
-          'UPDATE "Event" SET location = $1, latitude = $2, longitude = $3, city = $4, state = $5 WHERE id = $6',
-          [location, latitude, longitude, city, state, row.id]
+          'UPDATE "Event" SET location = $1, latitude = $2, longitude = $3, city = $4, state = $5, zip = $6  WHERE id = $7',
+          [location, latitude, longitude, city, state, zip, row.id]
         );
       }
     }

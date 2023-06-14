@@ -5,7 +5,7 @@ const db = require("../happndb/dbConfig.js");
 async function getAddresses() {
   try {
     const addresses = await db.any(
-      'SELECT id, address FROM "Event" WHERE location IS NULL'
+      'SELECT id, address FROM "Event" WHERE location IS NULL OR latitude IS NULL OR longitude IS NULL OR city IS NULL OR state IS NULL'
     );
     return addresses; // Return the addresses from the function
   } catch (err) {
@@ -28,10 +28,33 @@ async function geocode(address) {
 
     const { lat, lng } = response.data.results[0].geometry.location;
 
+    const addressComponents = response.data.results[0].address_components;
+
+    let borough = null;
+    let city = null;
+    let state = null;
+
+    for (const component of addressComponents) {
+      if (component.types.includes("administrative_area_level_2")) {
+        borough = component.long_name;
+      }
+      if (component.types.includes("locality")) {
+        city = component.long_name;
+      }
+      if (component.types.includes("administrative_area_level_1")) {
+        state = component.short_name;
+      }
+    }
+
+    // Use borough if available, otherwise just use city
+    const finalCity = borough || city;
+
     return {
       location: `SRID=4326;POINT(${lng} ${lat})`,
       latitude: lat,
       longitude: lng,
+      city: finalCity,
+      state: state,
     };
   } catch (err) {
     console.error(err.message);
@@ -44,10 +67,10 @@ async function updateAddresses() {
     for (let row of addresses) {
       const geocodedData = await geocode(row.address); // Use geocode function
       if (geocodedData) {
-        const { location, latitude, longitude } = geocodedData;
+        const { location, latitude, longitude, city, state } = geocodedData;
         await db.any(
-          'UPDATE "Event" SET location = $1, latitude = $2, longitude = $3 WHERE id = $4',
-          [location, latitude, longitude, row.id]
+          'UPDATE "Event" SET location = $1, latitude = $2, longitude = $3, city = $4, state = $5 WHERE id = $6',
+          [location, latitude, longitude, city, state, row.id]
         );
       }
     }

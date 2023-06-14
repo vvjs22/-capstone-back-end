@@ -2,6 +2,7 @@ const cors = require("cors");
 const axios = require("axios");
 const db = require("../happndb/dbConfig.js");
 
+// Retrieve addresses from database
 async function getAddresses() {
   try {
     const addresses = await db.any(
@@ -12,7 +13,7 @@ async function getAddresses() {
     console.error(err.message);
   }
 }
-
+// Geocode function
 async function geocode(address) {
   try {
     const response = await axios.get(
@@ -27,15 +28,15 @@ async function geocode(address) {
     );
 
     const { lat, lng } = response.data.results[0].geometry.location;
-
+// Retrieve address components from response
     const addressComponents = response.data.results[0].address_components;
-
+// Initialize variables
     let borough = null;
     let city = null;
     let state = null;
     let zip = null;
 
-
+// Loop through address components to find borough, city, state, and zip
     for (const component of addressComponents) {
       if (component.types.includes("administrative_area_level_2")) {
         borough = component.long_name;
@@ -66,7 +67,7 @@ async function geocode(address) {
     console.error(err.message);
   }
 }
-
+// Update addresses function
 async function updateAddresses() {
   try {
     const addresses = await getAddresses(); // Retrieve addresses
@@ -85,6 +86,46 @@ async function updateAddresses() {
   }
 }
 
-updateAddresses(); // Call the updateAddresses function
+// updateAddresses(); // Call the updateAddresses function on save
 
-module.exports = { getAddresses, geocode, updateAddresses };
+// Database trigger function
+async function handle() {
+  try {
+    // Call the updateAddresses function whenever a new entry is made on  "Event"
+    await updateAddresses();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Create the handle function in the PostgreSQL database
+(async () => {
+  try {
+    await db.any(`
+      CREATE OR REPLACE FUNCTION handle() RETURNS TRIGGER AS $$
+      BEGIN
+        PERFORM updateAddresses();
+        RETURN NEW;
+      END;
+      $$ LANGUAGE plpgsql;
+    `);
+  } catch (error) {
+    console.error(error);
+  }
+})();
+
+// Create the trigger in the PostgreSQL database
+(async () => {
+  try {
+    await db.any(`
+      CREATE OR REPLACE TRIGGER event_insert_trigger
+      AFTER INSERT ON "Event"
+      FOR EACH ROW
+      EXECUTE FUNCTION handle()
+    `);
+  } catch (error) {
+    console.error(error);
+  }
+})();
+
+module.exports = { getAddresses, geocode, updateAddresses, handle };

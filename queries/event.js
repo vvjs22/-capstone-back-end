@@ -85,10 +85,12 @@ const getEvent = async (id) => {
 };
 
 // Create a new event
+
 const createEvent = async (event) => {
   try {
+    const addressData = await helperFunction.geocode(event.address); // Get all columns data from the helper function
     const newEvent = await db.one(
-      'INSERT INTO "Event" (title, description, date, time, address, city, state, zip, img_link, organizer_user_id, cause_id, category) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *',
+      'INSERT INTO "Event" (title, description, date, time, address, city, state, zip, img_link, organizer_user_id, cause_id, category, location, latitude, longitude) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING *',
       [
         event.title,
         event.description,
@@ -102,13 +104,16 @@ const createEvent = async (event) => {
         event.organizer_user_id,
         event.cause_id,
         event.category,
+        event.location,
+        event.latitude,
+        event.longitude,
       ]
     );
     //helper function w/ google api to get 4326, lat and long from address
-    const geoCoordinates = await helperFunction.geocode(newEvent.address);
-    newEvent.location = geoCoordinates.location;
-    newEvent.latitude = geoCoordinates.latitude;
-    newEvent.longitude = geoCoordinates.longitude;
+    // const geoCoordinates = await helperFunction.geocode(newEvent.address);
+    // newEvent.location = geoCoordinates.location;
+    // newEvent.latitude = geoCoordinates.latitude;
+    // newEvent.longitude = geoCoordinates.longitude;
 
     // Update the row in the database with the geoCoordinates
     await db.none(

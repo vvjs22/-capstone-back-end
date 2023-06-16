@@ -116,15 +116,15 @@ const createEvent = async (event) => {
     // newEvent.longitude = geoCoordinates.longitude;
 
     // Update the row in the database with the geoCoordinates
-    await db.none(
-      'UPDATE "Event" SET location = $1, latitude = $2, longitude = $3 WHERE id = $4',
-      [
-        geoCoordinates.location,
-        geoCoordinates.latitude,
-        geoCoordinates.longitude,
-        newEvent.id,
-      ]
-    );
+    // await db.none(
+    //   'UPDATE "Event" SET location = $1, latitude = $2, longitude = $3 WHERE id = $4',
+    //   [
+    //     geoCoordinates.location,
+    //     geoCoordinates.latitude,
+    //     geoCoordinates.longitude,
+    //     newEvent.id,
+    //   ]
+    // );
 
     return newEvent;
   } catch (error) {
@@ -132,6 +132,22 @@ const createEvent = async (event) => {
     throw error;
   }
 };
+
+//Delete an event
+const deleteEvent = async (id) => {
+  try {
+    const eventId = parseInt(id);
+    const deletedEvent = await db.one(
+      'DELETE FROM "Event" WHERE id = $1 RETURNING *',
+      eventId
+    );
+    return deletedEvent;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
 
 // Allow user to check-in to event
 const userCheckIn = async (eventID, userID) => {
@@ -143,7 +159,7 @@ const userCheckIn = async (eventID, userID) => {
     );
 
     if (existingCheckIn) {
-      // User is already checked-in Ask Steven error or message
+      // User is already checked-in
       throw new Error("User is already checked-in");
     }
 
@@ -171,5 +187,6 @@ module.exports = {
   getEvent,
   createEvent,
   getCauseById,
+  deleteEvent,
   userCheckIn,
 };

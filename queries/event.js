@@ -85,10 +85,12 @@ const getEvent = async (id) => {
 };
 
 // Create a new event
+
 const createEvent = async (event) => {
   try {
+    const addressData = await helperFunction.geocode(event.address); // Get all columns data from the helper function
     const newEvent = await db.one(
-      'INSERT INTO "Event" (title, description, date, time, address, city, state, zip, img_link, organizer_user_id, cause_id, category) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *',
+      'INSERT INTO "Event" (title, description, date, time, address, city, state, zip, img_link, organizer_user_id, cause_id, category, location, latitude, longitude) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING *',
       [
         event.title,
         event.description,
@@ -102,24 +104,27 @@ const createEvent = async (event) => {
         event.organizer_user_id,
         event.cause_id,
         event.category,
+        event.location,
+        event.latitude,
+        event.longitude,
       ]
     );
     //helper function w/ google api to get 4326, lat and long from address
-    const geoCoordinates = await helperFunction.geocode(newEvent.address);
-    newEvent.location = geoCoordinates.location;
-    newEvent.latitude = geoCoordinates.latitude;
-    newEvent.longitude = geoCoordinates.longitude;
+    // const geoCoordinates = await helperFunction.geocode(newEvent.address);
+    // newEvent.location = geoCoordinates.location;
+    // newEvent.latitude = geoCoordinates.latitude;
+    // newEvent.longitude = geoCoordinates.longitude;
 
     // Update the row in the database with the geoCoordinates
-    await db.none(
-      'UPDATE "Event" SET location = $1, latitude = $2, longitude = $3 WHERE id = $4',
-      [
-        geoCoordinates.location,
-        geoCoordinates.latitude,
-        geoCoordinates.longitude,
-        newEvent.id,
-      ]
-    );
+    // await db.none(
+    //   'UPDATE "Event" SET location = $1, latitude = $2, longitude = $3 WHERE id = $4',
+    //   [
+    //     geoCoordinates.location,
+    //     geoCoordinates.latitude,
+    //     geoCoordinates.longitude,
+    //     newEvent.id,
+    //   ]
+    // );
 
     return newEvent;
   } catch (error) {
@@ -127,6 +132,22 @@ const createEvent = async (event) => {
     throw error;
   }
 };
+
+//Delete an event
+const deleteEvent = async (id) => {
+  try {
+    const eventId = parseInt(id);
+    const deletedEvent = await db.one(
+      'DELETE FROM "Event" WHERE id = $1 RETURNING *',
+      eventId
+    );
+    return deletedEvent;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
 
 // Allow user to check-in to event
 const userCheckIn = async (eventID, userID) => {
@@ -138,7 +159,7 @@ const userCheckIn = async (eventID, userID) => {
     );
 
     if (existingCheckIn) {
-      // User is already checked-in Ask Steven error or message
+      // User is already checked-in
       throw new Error("User is already checked-in");
     }
 
@@ -166,5 +187,6 @@ module.exports = {
   getEvent,
   createEvent,
   getCauseById,
+  deleteEvent,
   userCheckIn,
 };

@@ -7,7 +7,7 @@ const {
   getAllEvents,
   getEvent,
   createEvent,
-  getCauseById,
+  deleteEvent,
   userCheckIn,
 } = require("../queries/event.js");
 
@@ -22,7 +22,7 @@ events.get("/", async (req, res) => {
   }
 });
 
-//SHOW remove queries from here
+//SHOW
 events.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -39,34 +39,52 @@ events.post("/", async (req, res) => {
   console.log(req.body);
   try {
     const {
-      cause_id,
       title,
       description,
       date,
       time,
       address,
-      latitude,
-      longitude,
+      city,
+      state,
+      zip,
       img_link,
       organizer_user_id,
+      cause_id,
       category,
-      // checked_in_users,
+      location,
+      latitude,
+      longitude,
     } = req.body;
     const newEvent = await createEvent({
-      cause_id,
       title,
       description,
       date,
       time,
       address,
+      city,
+      state,
+      zip,
       img_link,
+      organizer_user_id,
+      cause_id,
+      category,
+      location,
       latitude,
       longitude,
-      organizer_user_id,
-      category,
-      // checked_in_users,
     });
     res.json(newEvent);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+});
+
+//DELETE
+events.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedEvent = await deleteEvent(id);
+    res.json(deletedEvent);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "An error occurred" });

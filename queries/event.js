@@ -1,7 +1,7 @@
 const express = require("express");
 const events = express.Router();
 const db = require("../happndb/dbConfig.js");
-const helpers = require("../helperFunctions/helperFunction.js");
+const helperFunction = require("../helperFunctions/helperFunction.js");
 
 // Select all events
 const getAllEvents = async () => {
@@ -147,7 +147,6 @@ const deleteEvent = async (id) => {
     throw error;
   }
 };
-
 
 // Allow user to check-in to event
 const userCheckIn = async (eventID, userID) => {

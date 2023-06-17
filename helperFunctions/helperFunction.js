@@ -86,7 +86,7 @@ async function updateAddresses() {
   }
 }
 
-updateAddresses(); // Call the updateAddresses function on save
+// updateAddresses(); // Call the updateAddresses function on save
 
 // Database trigger function
 // async function handle() {

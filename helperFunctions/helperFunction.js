@@ -86,46 +86,46 @@ async function updateAddresses() {
   }
 }
 
-// updateAddresses(); // Call the updateAddresses function on save
+updateAddresses(); // Call the updateAddresses function on save
 
 // Database trigger function
-async function handle() {
-  try {
-    // Call the updateAddresses function whenever a new entry is made on  "Event"
-    await updateAddresses();
-  } catch (error) {
-    console.error(error);
-  }
-}
+// async function handle() {
+//   try {
+//     // Call the updateAddresses function whenever a new entry is made on  "Event"
+//     await updateAddresses();
+//   } catch (error) {
+//     console.error(error);
+//   }
+// }
 
 // Create the handle function in the PostgreSQL database
-(async () => {
-  try {
-    await db.any(`
-      CREATE OR REPLACE FUNCTION handle() RETURNS TRIGGER AS $$
-      BEGIN
-        PERFORM updateAddresses();
-        RETURN NEW;
-      END;
-      $$ LANGUAGE plpgsql;
-    `);
-  } catch (error) {
-    console.error(error);
-  }
-})();
+// (async () => {
+//   try {
+//     await db.any(`
+//       CREATE OR REPLACE FUNCTION handle() RETURNS TRIGGER AS $$
+//       BEGIN
+//         PERFORM updateAddresses();
+//         RETURN NEW;
+//       END;
+//       $$ LANGUAGE plpgsql;
+//     `);
+//   } catch (error) {
+//     console.error(error);
+//   }
+// })();
 
 // Create the trigger in the PostgreSQL database
-(async () => {
-  try {
-    await db.any(`
-      CREATE OR REPLACE TRIGGER event_insert_trigger
-      AFTER INSERT ON "Event"
-      FOR EACH ROW
-      EXECUTE FUNCTION handle()
-    `);
-  } catch (error) {
-    console.error(error);
-  }
-})();
+// (async () => {
+//   try {
+//     await db.any(`
+//       CREATE OR REPLACE TRIGGER event_insert_trigger
+//       AFTER INSERT ON "Event"
+//       FOR EACH ROW
+//       EXECUTE FUNCTION handle()
+//     `);
+//   } catch (error) {
+//     console.error(error);
+//   }
+// })();
 
-module.exports = { getAddresses, geocode, updateAddresses, handle };
+module.exports = { getAddresses, geocode, updateAddresses };
